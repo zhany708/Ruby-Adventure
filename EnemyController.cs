@@ -8,7 +8,6 @@ public class EnemyController : MonoBehaviour
     public bool vertical;
 
     float moveSpeed = 2.0f;
-
     Vector2 m_Position;
     Rigidbody2D m_Rigidbody2d;
 
@@ -22,6 +21,8 @@ public class EnemyController : MonoBehaviour
     Animator m_Animator;
 
     //攻击相关
+    public ParticleSystem smokeEffect;
+
     bool m_Aggressive = true;
 
     //音频相关
@@ -86,6 +87,7 @@ public class EnemyController : MonoBehaviour
     {
         m_Aggressive = false;
         m_Rigidbody2d.simulated = false;    //将组件从物理系统中移除，也就是说不会再有碰撞发生
+        smokeEffect.Stop();    //停止烟雾效果（如果删除的话会看起来不真实）
 
         m_Animator.SetTrigger("Fixed");
             

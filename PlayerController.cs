@@ -40,9 +40,10 @@ public class PlayerController : MonoBehaviour
     public AudioClip m_AttackClip;
     public AudioClip m_HittedClip;
 
-    AudioSource m_Audiosource;
-  
-    
+    AudioSource[] m_Audiosource;    //当一个组件有多个播放器时，需要用数组来引用各个播放器
+    AudioSource walkingAudioSource;     //将播放走路音频的播放器与播放其他音频的播放器区分开，防止出现播放错误
+    AudioSource actionAudioSource;      //如果用一个音源的话，当停止播放走路音效时，通过playoneshot播放其余音效的效果会减弱
+
 
 
     void Start()
@@ -57,7 +58,10 @@ public class PlayerController : MonoBehaviour
 
         m_Rigidbody2d = GetComponent<Rigidbody2D>();
         m_Animator = GetComponent<Animator>();
-        m_Audiosource = GetComponent<AudioSource>();
+
+        m_Audiosource = GetComponents<AudioSource>();
+        walkingAudioSource = m_Audiosource[0];
+        actionAudioSource = m_Audiosource[1];
 
         m_CurrentHealth = maxHealth;
     }
@@ -167,19 +171,19 @@ public class PlayerController : MonoBehaviour
 
     private void PlayWalkingSound()
     {
-        if (m_Move.magnitude > Mathf.Epsilon && !m_Audiosource.isPlaying)      //后半段很重要，如果在播放过程中重复播放会有电流声！
-        {           
-            m_Audiosource.Play();           
+        if (m_Move.magnitude > Mathf.Epsilon && !walkingAudioSource.isPlaying)      //后半段很重要，如果在播放过程中重复播放会有电流声！
+        {
+            walkingAudioSource.Play();        
         }
 
-        else if (m_Move.magnitude <= Mathf.Epsilon && m_Audiosource.isPlaying)
+        else if (m_Move.magnitude <= Mathf.Epsilon && walkingAudioSource.isPlaying)
         {
-            m_Audiosource.Stop();
+            walkingAudioSource.Stop();
         }
     }
 
-    public void PlaySound(AudioClip clip)       //通过角色播放音频
+    public void PlaySound(AudioClip clip)       //通过角色播放音频，使用与走路音源不同的音源
     {
-        m_Audiosource.PlayOneShot(clip);
+        actionAudioSource.PlayOneShot(clip);
     }
 }
